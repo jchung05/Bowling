@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Frame:</strong>
+  <%= @game.frame %>
+</p>
+
+<p>
+  <strong>Score:</strong>
+  <%= @game.score %>
+</p>
+
+<%= link_to 'Edit', edit_game_path(@game) %> |
+<%= link_to 'Back', games_path %>
