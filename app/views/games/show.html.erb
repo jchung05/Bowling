@@ -1,13 +1,22 @@
 <p id="notice"><%= notice %></p>
 
 <p>
+  <%= if @game.exists
+        button_to "Bowl", bowl_game_path(@game), :method => :put
+      end %>
+  <%= 
+        button_to "Reset Game", reset_game_path(@game), :method => :put
+       %>
+</p>
+
+<p>
   <strong>Frame:</strong>
-  <%= @game.frame %>
+  <%= @game.getFrame %>
 </p>
 
 <p>
   <strong>Attempt:</strong>
-  <%= @game.attempt %>
+  <%= @game.getAttempt %>
 </p>
 
 <p>

@@ -2,7 +2,7 @@
 
 <h1>Obligatory Your Mom Joke</h1>
 
-<table>
+<table border="1">
   <thead>
     <tr>
       <th>Player Name</th>
@@ -21,13 +21,16 @@
                 else
                    game.name
                 end %></td>
-        <td><%=# if game.frameIndex == -1
-               #   "Game Over"
-               # else
-               #   game.current_frame % 2 + 1
-	       # end
-	        game.frame %></td>
-	<td></td>
+        <td><%= if game.index == -1
+                  "Game Over"
+                else
+                  game.index / 2 + 1
+	        end %></td>
+	<td><%= if game.index == -1
+                  "-"
+                else
+                  game.index % 2
+                end %></td>
         <td><%= game.score %></td>
         <td><%= link_to 'Show', game %></td>
         <td><%= link_to 'Edit', edit_game_path(game) %></td>

@@ -16,11 +16,11 @@ class GamesController < ApplicationController
   def new
     @game = Game.new
 
-#    @game.score = 0
-#    @game.totalPins = 10
-#    @game.frameIndex = 0
-#    @game.pinsKnockedOver = 0
-#    @game.array = Array.new( 20, -1 )
+    @game.score = 0
+    @game.totalPins = 10
+    @game.index = 0
+    @game.pinsKnockedOver = 0
+    @game.frameArray = Array.new( 20, -1 )
   end
 
   # GET /games/1/edit
@@ -32,10 +32,12 @@ class GamesController < ApplicationController
   def create
     @game = Game.new(game_params)
 
+#    Use this later, take the form data for testing purposes
 #    @game.score = 0
-#    @game.totalPins = 10
-#    @game.pinsKnockedOver = 0
-#    @game.frameIndex = 0
+    @game.totalPins = 10
+    @game.pinsKnockedOver = 0
+    @game.index = 0
+    @game.frameArray = Array.new( 20, -1 )
 
     respond_to do |format|
       if @game.save
@@ -72,17 +74,35 @@ class GamesController < ApplicationController
     end
   end
 
-  # Method to bowl
+  # Function to bowl
   def bowl
-    while @game.exists
-
+    @game.bowl
+      # Check if game is over at the start of bowl method, not in this function
+ 
+    respond_to do |format|
+      if @game.save
+        format.html { redirect_to @game, notice: 'You hit ' + @game.pinsKnockedOver.to_s + ' pins, loser.' }
+#        format.json{ head :no_content }
+        format.json{ render :show, status: :ok, location: @game }
+      else
+        format.html{ render :edit }
+        format.json{ render json: @game.errors, status: :unprocessable_entity }
+      end
     end
   end
 
-  # Method to reset game
+  # Function to reset game
   def reset
-    while @game.exists
+    @game.clearScore
 
+    respond_to do |format|
+      if @game.save
+        format.html { redirect_to @game, notice: @game.name + "'s score has been reset." }
+        format.json { head :no_content }
+      else
+        format.html { render :new }
+        format.json { render json: @game.errors, status: :unprocessable_entity }
+      end
     end
   end
 
