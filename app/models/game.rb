@@ -3,7 +3,7 @@ class Game < ActiveRecord::Base
 
   after_create :init
 
-  def init:
+  def init
     
   end	
 end
