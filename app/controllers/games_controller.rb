@@ -15,12 +15,6 @@ class GamesController < ApplicationController
   # GET /games/new
   def new
     @game = Game.new
-
-    @game.score = 0
-    @game.totalPins = 10
-    @game.index = 0
-    @game.pinsKnockedOver = 0
-    @game.frameArray = Array.new( 20, -1 )
   end
 
   # GET /games/1/edit
@@ -31,13 +25,6 @@ class GamesController < ApplicationController
   # POST /games.json
   def create
     @game = Game.new(game_params)
-
-#    Use this later, take the form data for testing purposes
-#    @game.score = 0
-    @game.totalPins = 10
-    @game.pinsKnockedOver = 0
-    @game.index = 0
-    @game.frameArray = Array.new( 20, -1 )
 
     respond_to do |format|
       if @game.save

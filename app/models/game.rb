@@ -5,6 +5,10 @@ class Game < ActiveRecord::Base
 
   def init
     self.index = 0
+#    self.score = 99
+    self.totalPins = 10
+    self.index = 0
+    self.pinsKnockedOver = 0
     self.frameArray = Array.new(20,-1)
     self.save
   end
