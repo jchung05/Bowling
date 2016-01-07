@@ -51,6 +51,14 @@ class Game < ActiveRecord::Base
     end
   end
 
+  def getName
+    if name == ""
+      "-----"
+    else
+       name
+    end
+  end
+
   def getFrame
     if over
         "Game Over"

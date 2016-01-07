@@ -5,10 +5,10 @@
 <table border="1">
   <thead>
     <tr>
-      <th>Player Name</th>
-      <th>Current Frame</th>
-      <th>Attempt</th>
-      <th>Score</th>
+      <th width=100px>Player Name</th>
+      <th width=75px>Current Frame</th>
+      <th width=50px>Attempt</th>
+      <th width=50px>Score</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -16,25 +16,13 @@
   <tbody>
     <% @games.each do |game| %>
       <tr>
-        <td><%= if game.name == nil
-                   "-"
-                else
-                   game.name
-                end %></td>
-        <td><%= if game.index == -1
-                  "Game Over"
-                else
-                  game.index / 2 + 1
-	        end %></td>
-	<td><%= if game.index == -1
-                  "-"
-                else
-                  game.index % 2
-                end %></td>
+        <td><%= game.getName %></td>
+        <td><%= game.getFrame %></td>
+	<td><%= game.getAttempt %></td>
         <td><%= game.score %></td>
-        <td><%= link_to 'Show', game %></td>
-        <td><%= link_to 'Edit', edit_game_path(game) %></td>
-        <td><%= link_to 'Destroy', game, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td width=35px><%= link_to 'Show', game %></td>
+        <td width=35px><%= link_to 'Edit', edit_game_path(game) %></td>
+        <td width=35px><%= link_to 'Destroy', game, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>

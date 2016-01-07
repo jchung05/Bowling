@@ -51,10 +51,10 @@
     </thead>
     <tbody>
         <tr align="right">
-	    <td><%= @game.name %></td>
+	    <td><%= @game.getName %></td>
 
             <% @game.rolls.each do |item| %>
-            <td><%= item.frameScore %></td>
+            <td width=25px><%= item.frameScore %></td>
             <% end %>
 
 	    <td><%= @game.score %></td>
