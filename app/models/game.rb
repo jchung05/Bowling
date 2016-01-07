@@ -11,7 +11,7 @@ class Game < ActiveRecord::Base
 ##    Set to 0 on final deploy
 ##    self.score = 99
 
-    self.index = 17
+#    self.index = 17
     21.times {
       roll = Roll.new
       roll.pinsLeft = 10
@@ -24,11 +24,11 @@ class Game < ActiveRecord::Base
   end
 
   def exists
-    self.index == -1
+    index == -1
   end 
 
   def over
-    self.index == 21
+    index == 21
   end
 
   def indexInc
@@ -37,7 +37,7 @@ class Game < ActiveRecord::Base
 
   def clearScore
     self.init
-    self.score = 777
+    self.score = 0
   end
 
   def bowl
@@ -54,25 +54,24 @@ class Game < ActiveRecord::Base
   def getFrame
     if over
         "Game Over"
-    elsif self.index > 18
+    elsif index > 18
         10
     else
-        self.index / 2 + 1
+        index / 2 + 1
     end
   end
 
   def getAttempt
     if over
         "-"
-    elsif self.index > 18
-        ( self.index - 17 )
+    elsif index > 18
+        ( index - 17 )
     else
-        self.index % 2 + 1
+        index % 2 + 1
     end
   end
 
   def getPinsLeft
-#    self.rolls.pinsLeft
     rolls[index-1].pinsLeft.to_s
   end
 end
