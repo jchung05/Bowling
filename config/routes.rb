@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
+#  resources :rolls
   # What can a user do?
   resources :games do
     member do
-        put :bowl, :reset
-        
+      put :bowl, :reset
+      resources :rolls
     end
   end
   # The priority is based upon order of creation: first created -> highest priority.

@@ -1,21 +1,35 @@
 class Game < ActiveRecord::Base
-  has_many :scores, dependent: :destroy
+  has_many :rolls, dependent: :destroy
+  validates_presence_of :index, :score
+  accepts_nested_attributes_for :rolls
 
   after_create :init
 
   def init
     self.index = 0
-#    self.score = 99
-    self.totalPins = 10
-    self.index = 0
-    self.pinsKnockedOver = 0
-    self.frameArray = Array.new(20,-1)
+
+##    Set to 0 on final deploy
+##    self.score = 99
+
+    self.index = 17
+    21.times {
+      roll = Roll.new
+      roll.pinsLeft = 10
+      roll.frameScore = -1
+      roll.save
+      self.rolls << roll
+    }
+
     self.save
   end
 
   def exists
-    self.index != -1
+    self.index == -1
   end 
+
+  def over
+    self.index == 21
+  end
 
   def indexInc
     self.index += 1
@@ -27,20 +41,18 @@ class Game < ActiveRecord::Base
   end
 
   def bowl
-    if self.exists
-      if self.index < 20
-        
-        self.indexInc
-#        self.frameArray[self.index] = self.index + 1
-        self.score = self.index + self.score
-      else
-        self.index = -1
-      end
+    if !over
+      self.score = self.index + self.score
+      self.rolls[index].frameScore += self.index
+      self.rolls[index].pinsLeft += self.index
+      self.indexInc
+    else
+      self.index = -1
     end
   end
 
   def getFrame
-    if self.index == -1
+    if over
         "Game Over"
     elsif self.index > 18
         10
@@ -50,12 +62,17 @@ class Game < ActiveRecord::Base
   end
 
   def getAttempt
-    if self.index == -1
+    if over
         "-"
     elsif self.index > 18
         ( self.index - 17 )
     else
         self.index % 2 + 1
     end
+  end
+
+  def getPinsLeft
+#    self.rolls.pinsLeft
+    rolls[index-1].pinsLeft.to_s
   end
 end

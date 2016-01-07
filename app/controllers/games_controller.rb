@@ -63,23 +63,36 @@ class GamesController < ApplicationController
 
   # Function to bowl
   def bowl
-    @game.bowl
+    if !@game.exists
+      @game.bowl
       # Check if game is over at the start of bowl method, not in this function
  
-    respond_to do |format|
-      if @game.save
-        format.html { redirect_to @game, notice: 'You hit ' + @game.pinsKnockedOver.to_s + ' pins, loser.' }
-#        format.json{ head :no_content }
-        format.json{ render :show, status: :ok, location: @game }
-      else
-        format.html{ render :edit }
-        format.json{ render json: @game.errors, status: :unprocessable_entity }
+      respond_to do |format|
+        if @game.save
+           if !@game.over
+             format.html { redirect_to @game, notice: 'You hit ' + @game.getPinsLeft + ' pins, loser.' }
+           else
+             format.html { redirect_to @game, notice: 'The game is over. Good game!' }
+           end
+#          format.json{ head :no_content }
+          format.json { render :show, status: :ok, location: @game }
+        else
+          format.html { render :edit }
+          format.json { render json: @game.errors, status: :unprocessable_entity }
+        end
+      end
+#      @game.bowl
+    else
+      respond_to do |format|
+        format.html { redirect_to @game, notice: 'The game is over. Good game!' }
+        format.json { render :show, status: :ok, location: games_url }
       end
     end
   end
 
   # Function to reset game
   def reset
+    Roll.delete_all( "game_id = " + @game.id.to_s )
     @game.clearScore
 
     respond_to do |format|

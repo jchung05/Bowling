@@ -1,9 +1,9 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <%= if @game.exists
+  <%= if !@game.over
         button_to "Bowl", bowl_game_path(@game), :method => :put
-      end %>
+      end %><br/>
   <%= 
         button_to "Reset Game", reset_game_path(@game), :method => :put
        %>
@@ -16,8 +16,13 @@
 
 <p>
   <strong>Attempt:</strong>
-  <%= @game.totalPins %>
+  <%= @game.getAttempt %>
 </p>
+
+<p>
+  <strong>Index:</strong>
+  <%= @game.index %>
+</p
 
 <p>
   <strong>Score:</strong>
@@ -44,27 +49,11 @@
     <tbody>
         <tr align="right">
 	    <td><%= @game.name %></td>
-            <td>1st</td>
-            <td>2nd</td>
-            <td>3rd</td>
-            <td>4th</td>
-            <td>5th</td>
-            <td>6th</td>
-            <td>7th</td>
-            <td>8th</td>
-            <td>9th</td>
-            <td>10th</td>
-            <td>11th</td>
-            <td>12th</td>
-            <td>13th</td>
-            <td>14th</td>
-            <td>15th</td>
-            <td>16th</td>
-            <td>17th</td>
-            <td>18th</td>
-            <td>19th</td>
-            <td>20th</td>
-            <td>21th</td>
+
+            <%= @game.rolls.each do |item| %>
+            <td><%= item.frameScore %></td>
+            <% end %>
+
 	    <td><%= @game.score %></td>
         </tr>
     </tbody>
