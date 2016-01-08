@@ -25,11 +25,6 @@
 <p>
   <strong>Index:</strong>
   <%= @game.index %>
-</p
-
-<p>
-  <strong>Score:</strong>
-  <%= @game.score %>
 </p>
 
 <table border="1">
@@ -58,6 +53,13 @@
             <% end %>
 
 	    <td><%= @game.score %></td>
+        </tr>
+        <tr align="right">
+            <td width=50px height=20px><%= @game.rolls[19].pinsLeft %></td>
+            <% @game.rolls.each do |item| %>
+              <td width=25px><%= item.getSubscore %></td>
+            <% end %>
+            <td colspan="2" width=50px></td>
         </tr>
     </tbody>
 </table>

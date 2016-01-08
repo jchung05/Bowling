@@ -2,17 +2,25 @@ class Roll < ActiveRecord::Base
   belongs_to :game
   validates_presence_of :game_id, :frameScore
 
-  def getFrameScore
-    if frameScore == -1
+   def getFrameScore
+     if frameScore == -1
+       ""
+     elsif frameScore == 0
+       "-"
+     elsif pinsHit == pinsLeft and indexMod == 1
+       "/"
+     elsif frameScore == 10
+       "X"
+     else
+       frameScore
+     end
+   end
+
+  def getSubscore
+    if subscore == -1
       ""
-    elsif frameScore == 0
-      "-"
-    elsif frameScore == pinsLeft and pinsLeft != 10
-      "/"
-    elsif frameScore == 10
-      "X"
     else
-      frameScore
+      subscore
     end
   end
 end

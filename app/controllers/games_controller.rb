@@ -25,6 +25,7 @@ class GamesController < ApplicationController
   # POST /games.json
   def create
     @game = Game.new(game_params)
+    @game.modIndex
 
     respond_to do |format|
       if @game.save
@@ -63,25 +64,23 @@ class GamesController < ApplicationController
 
   # Function to bowl
   def bowl
-    if @game.exists?
-      @game.bowl
-      # Check if game is over at the start of bowl method, not in this function
+    if !@game.over?
+      @game.bowl!
+      @game.totalScore!
  
       respond_to do |format|
         if @game.save
-           if @game.exists?
-             format.html { redirect_to @game, notice: 'You hit ' + @game.getPinsHit.to_s + ', loser.' }
+           if !@game.over?
+             format.html { redirect_to @game, notice: 'You rolled ' + @game.getPinsHit.to_s + ', loser. Your current score is ' + @game.score.to_s }
            else
-             format.html { redirect_to @game, notice: 'The game is over. Good game!' }
+             format.html { redirect_to @game, notice: 'You rolled ' + @game.getPinsHit.to_s + ', loser. The game is over. Your final score was ' + @game.score.to_s + '. Good jorbs.' }
            end
-#          format.json{ head :no_content }
           format.json { render :show, status: :ok, location: @game }
         else
           format.html { render :edit }
           format.json { render json: @game.errors, status: :unprocessable_entity }
         end
       end
-#      @game.bowl
     else
       respond_to do |format|
         format.html { redirect_to @game, notice: 'The game is over. Good game!' }
@@ -92,8 +91,8 @@ class GamesController < ApplicationController
 
   # Function to reset game
   def reset
-    Roll.delete_all( "game_id = " + @game.id.to_s )
     @game.clearScore
+    @game.modIndex
 
     respond_to do |format|
       if @game.save

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160108093511) do
+ActiveRecord::Schema.define(version: 20160108193440) do
 
   create_table "games", force: :cascade do |t|
     t.integer  "index",      default: 0
@@ -25,9 +25,11 @@ ActiveRecord::Schema.define(version: 20160108093511) do
     t.integer  "game_id"
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
-    t.integer  "frameScore", default: 0
+    t.integer  "frameScore", default: -1
     t.integer  "pinsLeft",   default: 10
     t.integer  "pinsHit",    default: -1
+    t.integer  "subscore",   default: -1
+    t.integer  "indexMod"
   end
 
 end
