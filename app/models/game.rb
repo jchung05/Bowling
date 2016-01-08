@@ -9,13 +9,11 @@ class Game < ActiveRecord::Base
     self.index = 0
 
 ##    Set to 0 on final deploy
-##    self.score = 99
+#    self.score = 0
 
 #    self.index = 17
     21.times {
       roll = Roll.new
-      roll.pinsLeft = 10
-      roll.frameScore = -1
       roll.save
       self.rolls << roll
     }
@@ -23,32 +21,78 @@ class Game < ActiveRecord::Base
     self.save
   end
 
-  def exists
-    index == -1
+  def exists?
+    index != -1
   end 
 
-  def over
+  def over?
     index == 21
   end
 
   def indexInc
-    self.index += 1
+    if over?
+      self.index = -1
+    else
+      self.index += 1
+    end
   end
 
   def clearScore
+    Roll.delete_all( "game_id = " + self.id.to_s )
     self.init
-    self.score = 0
   end
 
   def bowl
-    if !over
-      self.score = self.index + self.score
-      self.rolls[index].frameScore += self.index
-      self.rolls[index].pinsLeft += self.index
-      self.indexInc
+    if exists?
+      if self.index % 2 == 0 and self.index < 20
+        self.rolls[index].pinsHit = rand(11)
+#alwaysstrike	self.rolls[index].pinsHit = 10
+        self.rolls[index].frameScore = self.rolls[index].pinsHit
+        self.rolls[index+1].pinsLeft =  10 - self.rolls[index].pinsHit
+
+        #score method for later
+        self.score += rolls[index].frameScore
+
+	if self.rolls[index].frameScore == 10 and self.index != 18
+          indexInc
+          indexInc
+        else
+          indexInc
+        end
+      elsif self.index % 2 == 1 and self.index < 20
+        self.rolls[index].pinsHit = rand(self.rolls[self.index].pinsLeft + 1)
+#alwaysspare        self.rolls[index].pinsHit = self.rolls[self.index].pinsLeft
+        self.rolls[index].frameScore = self.rolls[index].pinsHit
+
+        if self.index == 19 and self.rolls[index].pinsHit != self.rolls[19].pinsLeft
+          indexInc
+          indexInc
+        else
+          indexInc
+        end
+      #Extra roll on 10th frame
+     elsif self.rolls[19].pinsLeft > 0 and self.rolls[19].pinsLeft == self.rolls[19].frameScore
+        self.rolls[index].pinsHit = rand(self.rolls[19].pinsLeft + 1)
+        self.rolls[20].frameScore = self.rolls[index].pinsHit
+        self.rolls[index].pinsLeft = self.rolls[19].pinsLeft - self.rolls[index].pinsHit
+        indexInc
+      elsif self.rolls[19].pinsLeft == 0
+        self.rolls[index].pinsHit = rand(11)
+        self.rolls[20].frameScore = self.rolls[index].pinsHit
+        self.rolls[index].pinsLeft = 10 - self.rolls[index].pinsHit
+        indexInc
+      end
     else
       self.index = -1
     end
+  end
+
+  def strike?
+
+  end
+
+  def spare?
+
   end
 
   def getName
@@ -60,7 +104,7 @@ class Game < ActiveRecord::Base
   end
 
   def getFrame
-    if over
+    if !exists?
         "Game Over"
     elsif index > 18
         10
@@ -70,16 +114,22 @@ class Game < ActiveRecord::Base
   end
 
   def getAttempt
-    if over
+    if !exists?
         "-"
-    elsif index > 18
-        ( index - 17 )
-    else
+#    elsif index > 18
+#        ( index - 17 )
+    elsif index != 20
         index % 2 + 1
     end
   end
 
-  def getPinsLeft
-    rolls[index-1].pinsLeft.to_s
+  def getPinsHit
+    if index == 21 and rolls[19].pinsHit != -1
+      rolls[20].pinsHit.to_s + " pins"
+    elsif rolls[index-1].pinsHit == -1
+      "a strike"
+    else
+      rolls[index-1].pinsHit.to_s + " pins"
+    end
   end
 end

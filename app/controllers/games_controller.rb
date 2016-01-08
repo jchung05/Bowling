@@ -63,14 +63,14 @@ class GamesController < ApplicationController
 
   # Function to bowl
   def bowl
-    if !@game.exists
+    if @game.exists?
       @game.bowl
       # Check if game is over at the start of bowl method, not in this function
  
       respond_to do |format|
         if @game.save
-           if !@game.over
-             format.html { redirect_to @game, notice: 'You hit ' + @game.getPinsLeft + ' pins, loser.' }
+           if @game.exists?
+             format.html { redirect_to @game, notice: 'You hit ' + @game.getPinsHit.to_s + ', loser.' }
            else
              format.html { redirect_to @game, notice: 'The game is over. Good game!' }
            end
@@ -97,7 +97,7 @@ class GamesController < ApplicationController
 
     respond_to do |format|
       if @game.save
-        format.html { redirect_to @game, notice: @game.name + "'s score has been reset." }
+        format.html { redirect_to @game, notice: @game.getName + "'s score has been reset." }
         format.json { head :no_content }
       else
         format.html { render :new }
@@ -114,6 +114,6 @@ class GamesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def game_params
-      params.require(:game).permit(:name, :attempt, :score)
+      params.require(:game).permit(:name, :score)
     end
 end

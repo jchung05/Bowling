@@ -11,24 +11,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160107065656) do
+ActiveRecord::Schema.define(version: 20160108093511) do
 
   create_table "games", force: :cascade do |t|
-    t.integer  "index",           default: 0
-    t.integer  "score",           default: 0
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
+    t.integer  "index",      default: 0
+    t.integer  "score",      default: 0
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
     t.string   "name"
-    t.integer  "pinsKnockedOver", default: 0
-    t.integer  "totalPins",       default: 10
   end
 
   create_table "rolls", force: :cascade do |t|
     t.integer  "game_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer  "frameScore"
-    t.integer  "pinsLeft"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.integer  "frameScore", default: 0
+    t.integer  "pinsLeft",   default: 10
+    t.integer  "pinsHit",    default: -1
   end
 
 end

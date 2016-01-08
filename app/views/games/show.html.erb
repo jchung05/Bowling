@@ -1,10 +1,10 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <%= if @game.over
+  <%= if @game.over?
         button_to "Start Another Game", { controller: 'games', action: 'new' }, :method => :get
       end %>
-  <%= if !@game.over
+  <%= if !@game.over?
         button_to "Bowl", bowl_game_path(@game), :method => :put
       end %><br/>
   <%= 
@@ -54,7 +54,7 @@
 	    <td><%= @game.getName %></td>
 
             <% @game.rolls.each do |item| %>
-            <td width=25px><%= item.frameScore %></td>
+            <td width=25px><%= item.getFrameScore %></td>
             <% end %>
 
 	    <td><%= @game.score %></td>
