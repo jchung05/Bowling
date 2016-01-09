@@ -2,8 +2,8 @@ class Game < ActiveRecord::Base
   has_many :rolls, dependent: :destroy
   validates_presence_of :index, :score
   accepts_nested_attributes_for :rolls
-  default_scope order('created_at ASC')
-  scope: recent, unscoped.order('created_at DESC')
+  default_scope { order('created_at ASC') }
+  scope :recent, -> { unscoped.order('created_at DESC') }
 
   after_create :init
 

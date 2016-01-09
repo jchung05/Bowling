@@ -1,8 +1,8 @@
 class Roll < ActiveRecord::Base
   belongs_to :game
   validates_presence_of :game_id, :frameScore
-  default_scope order('created_at ASC')
-  scope: recent, unscoped.order('created_at DESC')
+  default_scope { order('created_at ASC') }
+  scope :recent, -> { unscoped.order('created_at DESC') }
 
    def getFrameScore
      if frameScore == -1
