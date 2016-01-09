@@ -14,7 +14,8 @@ class Game < ActiveRecord::Base
       roll.save
       self.rolls << roll
     }
-
+    
+    self.modIndex!
     self.save
   end
 
@@ -52,6 +53,7 @@ class Game < ActiveRecord::Base
           indexInc
         elsif self.rolls[self.index].frameScore == 10 and self.index == 18
           indexInc
+          self.rolls[self.index].indexMod = 0
           self.rolls[self.index].pinsLeft = 10
         else
           indexInc
@@ -59,15 +61,15 @@ class Game < ActiveRecord::Base
 
       elsif self.index % 2 == 1 and self.index < 20 #second rolls
         self.rolls[self.index].pinsHit = rand(self.rolls[self.index].pinsLeft + 1)
-#alwaysspare        self.rolls[index].pinsHit = self.rolls[self.index].pinsLeft
-        self.rolls[self.index].frameScore = self.rolls[index].pinsHit
+#alwaysspare        self.rolls[self.index].pinsHit = self.rolls[self.index].pinsLeft
+        self.rolls[self.index].frameScore = self.rolls[self.index].pinsHit
 
-        if self.rolls[18].frameScore == 10 and spare?( index )
+        if strike?( 18 ) and strike?( self.index )
           self.rolls[20].pinsLeft = 10
-        elsif self.rolls[18].frameScore == 10 and !spare?( index )
+        elsif self.rolls[18].frameScore == 10 and !spare?( self.index )
           self.rolls[20].pinsLeft = 10 - self.rolls[index].pinsHit
         end
-        if index == 19 and ( self.rolls[18].pinsHit + self.rolls[19].pinsHit < 10 )
+        if self.index == 19 and ( self.rolls[18].pinsHit + self.rolls[19].pinsHit < 10 )
           indexInc
           indexInc
         else
@@ -75,15 +77,15 @@ class Game < ActiveRecord::Base
         end
 
 #Extra roll on 10th frame
-      elsif strike?(18) or ( spare?(19) or strike?(19) ) #if your second roll is not a spare or strike
+      elsif strike?( 18 ) and ( strike?( 19 ) or strike?( 19 ) ) #if your second roll is a spare or strike
+        self.rolls[20].pinsHit = rand( self.rolls[20].pinsLeft + 1 )
+        self.rolls[20].frameScore = self.rolls[20].pinsHit
+        self.rolls[20].pinsLeft = 10 - self.rolls[20].pinsHit
+        indexInc
+      elsif !strike?( 18 ) and  spare?( 19 ) #if your second roll is not a spare or strike
         self.rolls[20].pinsHit = rand( 10 - self.rolls[19].pinsHit + 1 )
         self.rolls[20].frameScore = self.rolls[20].pinsHit
         self.rolls[20].pinsLeft = self.rolls[19].pinsLeft - self.rolls[20].pinsHit
-        indexInc
-      elsif self.rolls[19].pinsLeft == 0 #if your second roll is a spare or strike
-        self.rolls[20].pinsHit = rand(11)
-        self.rolls[20].frameScore = self.rolls[20].pinsHit
-        self.rolls[20].pinsLeft = 10 - self.rolls[20].pinsHit
         indexInc
       end
     else
@@ -91,28 +93,31 @@ class Game < ActiveRecord::Base
     end
   end
 
-  def totalScore! #( idx )
+  def totalScore!
     self.score = 0
-    maxidx = 21
-    (0...maxidx).each do |num|
-#      self.score += num
-      if strike?( num )
-        if num >= 18
-          strike!( num,2 )
+    (0...self.index).each do |num|
+      if strike?( 18 ) and ( !spare?( 19 ) and !strike?( 19 ) ) and num == 20
+        self.score += self.rolls[num].frameScore
+      elsif ( strike?( 18 ) and num == 19 ) or num == 20 #escape cases
+
+      elsif strike?( num )
+        if num == 18
+          strike!( num, 2 )
         else
-          strike!( num,4 )
+          strike!( num, 4 )
         end
       elsif spare?( num )
-        spare!( num )
-      elsif self.rolls[num].frameScore != -1
+        spare!( num )        
+      elsif self.rolls[num].frameScore != -1 and !strike?( num ) and !spare?( num )
         self.score += self.rolls[num].frameScore
+        self.rolls[num].subscore = self.rolls[num].frameScore
       end
     end
-    self.rolls[index-1].subscore = self.score
+#    self.rolls[index-1].subscore = self.score
   end
 
   def strike?( x )
-    self.rolls[x].frameScore == 10
+    self.rolls[x].frameScore == 10 and ( x % 2 == 0 or x == 19 )
   end
 
   def spare?( x )
@@ -132,6 +137,7 @@ class Game < ActiveRecord::Base
       self.score += 0
     else
       self.score += specialScore
+      self.rolls[idx].subscore = specialScore
     end
   end
 
@@ -140,6 +146,7 @@ class Game < ActiveRecord::Base
     if self.rolls[idx+1].frameScore != -1
       specialScore += self.rolls[idx+1].frameScore
       self.score += specialScore
+      self.rolls[idx].subscore = specialScore
     else
       self.score += 0
     end
@@ -186,7 +193,7 @@ class Game < ActiveRecord::Base
       rolls[index-1].pinsHit.to_s + " pins"
     elsif spare?(index-1)
       "a spare"
-    elsif index == 21 and self.rolls[18].frameScore == 10
+    elsif index == 21 and ( self.rolls[18].frameScore == 10 or self.rolls[19].pinsHit == self.rolls[19].pinsLeft )
       rolls[20].pinsHit.to_s + " pins"
     elsif index == 21 and self.rolls[18].frameScore != 10
       rolls[19].pinsHit.to_s + " pins"
@@ -196,8 +203,8 @@ class Game < ActiveRecord::Base
   end
 
 #quickfix
-  def modIndex
-    (0..20).each do |x|
+  def modIndex!
+    (0...20).each do |x|
       if x % 2 == 1
         self.rolls[x].indexMod = 1
       else

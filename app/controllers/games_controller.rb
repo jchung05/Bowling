@@ -25,7 +25,6 @@ class GamesController < ApplicationController
   # POST /games.json
   def create
     @game = Game.new(game_params)
-    @game.modIndex
 
     respond_to do |format|
       if @game.save
@@ -92,7 +91,6 @@ class GamesController < ApplicationController
   # Function to reset game
   def reset
     @game.clearScore
-    @game.modIndex
 
     respond_to do |format|
       if @game.save

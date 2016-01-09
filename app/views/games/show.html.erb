@@ -22,15 +22,10 @@
   <%= @game.getAttempt %>
 </p>
 
-<p>
-  <strong>Index:</strong>
-  <%= @game.index %>
-</p>
-
 <table border="1">
     <thead>
         <tr>
-            <th width=50px>Frame</th>
+            <th width=75px>Frame</th>
             <th colspan="2" width=50px>1</th>
             <th colspan="2" width=50px>2</th>
             <th colspan="2" width=50px>3</th>
@@ -55,7 +50,7 @@
 	    <td><%= @game.score %></td>
         </tr>
         <tr align="right">
-            <td width=50px height=20px><%= @game.rolls[19].pinsLeft %></td>
+            <td width=50px height=25px>Scores Per Frame</td>
             <% @game.rolls.each do |item| %>
               <td width=25px><%= item.getSubscore %></td>
             <% end %>
